@@ -1,0 +1,10 @@
+import { ArrowUpRight, Bookmark, MapPin, Search } from 'lucide-react'
+import type { TicketState } from '../../tickets/hooks/useTickets'
+import type { EventDiscoveryState } from '../hooks/useEventDiscovery'
+import { categories } from '../model/events'
+
+type EventCollectionProps = { discovery: EventDiscoveryState; tickets: TicketState }
+
+export function EventCollection({ discovery, tickets }: EventCollectionProps) {
+  return <section className="events-section" id="events"><div className="events-heading"><div><span className="kicker">Curated this month</span><h2>Pick your next<br />good story.</h2></div><label><Search size={20} /><input value={discovery.query} onChange={(event) => discovery.setQuery(event.target.value)} placeholder="Search events, places..." /></label></div><div className="category-tabs">{categories.map((item, index) => <button key={item} className={discovery.category === item ? 'active' : ''} onClick={() => discovery.setCategory(item)}><span>0{index + 1}</span>{item}</button>)}</div><div className="event-grid">{discovery.visibleEvents.map((event, index) => <article className={`event-card card-${index % 3}`} key={event.id}><div className="event-image" onClick={() => tickets.openTickets(event)}><img src={event.image} alt={event.title} /><span style={{ background: event.colour }}>{event.category}</span><button onClick={(click) => { click.stopPropagation(); discovery.toggleSaved(event.id) }} aria-label="Save event"><Bookmark size={19} fill={discovery.saved.includes(event.id) ? 'currentColor' : 'none'} /></button></div><div className="event-body"><div className="date-block"><b>{event.day}</b><span>{event.month}</span></div><div><h3>{event.title}</h3><p><MapPin size={14} /> {event.venue}</p></div><button onClick={() => tickets.openTickets(event)}><ArrowUpRight /></button></div><footer><span>{event.time}</span><span>From €{event.price}</span></footer></article>)}</div>{discovery.visibleEvents.length === 0 && <div className="no-events">Nothing here yet. Try a different search or category.</div>}</section>
+}
